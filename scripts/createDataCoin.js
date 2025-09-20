@@ -36,11 +36,6 @@
  * 5. Creates a liquidity pool for trading
  * 6. Returns the addresses of your new DataCoin and pool
  *
- * 💡 AFTER CREATION:
- * - Save the DataCoin and Pool addresses for future reference
- * - Your creator allocation will be vested according to the vesting period
- * - Contributors can purchase tokens through the liquidity pool
- * - You can monitor your DataCoin's performance on block explorers
  *
  * ============================================================================
  */
