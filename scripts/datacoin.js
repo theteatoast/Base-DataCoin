@@ -89,11 +89,27 @@ const mintTokens = async (address, amount) => {
   console.log("Tokens minted to ", address);
 };
 
+const claimVesting = async () => {
+  const claimableAmount = await datacoinContract.getClaimableAmount();
+  console.log("Claimable amount: ", claimableAmount);
+  console.log("Claiming vesting...");
+  const claimVestingTx = await datacoinContract.claimVesting();
+  await claimVestingTx.wait();
+  console.log("Tx hash : ", claimVestingTx.hash);
+  console.log("Vesting claimed");
+};
+
+// ============= Grant Minter Role =============
 // const mintRoleAddress = "0x0035cd0CA79A5b156d5443b698655DBDc5403B45";
 // grantMinterRole(mintRoleAddress);
 
+// ============= Get Coin Info =============
 // getCoinInfo();
 
-const receiverAddress = "0x0035cd0CA79A5b156d5443b698655DBDc5403B45";
-const amount = 10;
-mintTokens(receiverAddress, amount);
+// ============= Mint Tokens ===============
+// const receiverAddress = "0x0035cd0CA79A5b156d5443b698655DBDc5403B45";
+// const amount = 10;
+// mintTokens(receiverAddress, amount);
+
+// ============= Claim Vesting =============
+claimVesting();
