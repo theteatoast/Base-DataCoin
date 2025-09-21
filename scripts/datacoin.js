@@ -92,8 +92,8 @@ const mintTokens = async (address, amount) => {
 // const mintRoleAddress = "0x0035cd0CA79A5b156d5443b698655DBDc5403B45";
 // grantMinterRole(mintRoleAddress);
 
-getCoinInfo();
+// getCoinInfo();
 
-// const receiverAddress = "0x0035cd0CA79A5b156d5443b698655DBDc5403B45";
-// const amount = 10;
-// mintTokens(receiverAddress, amount);
+const receiverAddress = "0x0035cd0CA79A5b156d5443b698655DBDc5403B45";
+const amount = 10;
+mintTokens(receiverAddress, amount);

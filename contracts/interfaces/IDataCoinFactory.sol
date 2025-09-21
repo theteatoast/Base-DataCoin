@@ -39,4 +39,6 @@ interface IDataCoinFactory {
     function getApprovedLockTokens() external view returns (address[] memory);
 
     function getLockableTokenConfig(address token) external view returns (AssetConfig memory);
+
+    function getMinLockAmount(address token) external view returns (uint256);
 }

@@ -55,8 +55,8 @@ const { getChainConfig, getAssetConfig } = require("./chainConfig.js");
 const chainName = "sepolia"; // Available options: "sepolia", "base"
 
 // 💰 DATACOIN BASIC INFORMATION
-const name = "My Data Coin 4"; // Name of your DataCoin
-const symbol = "MDC4"; // Symbol (ticker) for your DataCoin
+const name = "My Data Coin 5"; // Name of your DataCoin
+const symbol = "MDC5"; // Symbol (ticker) for your DataCoin
 const description = "My personal data coin for tokenization"; // Description of your DataCoin
 const image = "https://example.com/data-coin.png"; // Image URL for your DataCoin
 const email = "abc@gmail.com"; // Your contact email
