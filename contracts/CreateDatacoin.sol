@@ -35,7 +35,7 @@ contract CreateDatacoin {
         uint256 creatorVestingDuration = 365 days;
         uint256 contributorsAllocationBps = 6000; // 60%
         uint256 liquidityAllocationBps = 3000; // 30%
-        address lockToken = 0xB3296A9Fe9c9e5752f446d745EE7F47F77E13720;
+        address lockToken = 0x2EA104BCdF3A448409F2dc626e606FdCf969a5aE; // LSDC on sepolia
         uint256 lockAmount = dataCoinFactory.getMinLockAmount(lockToken);
         bytes32 salt = keccak256(abi.encodePacked(block.timestamp, msg.sender));
 
