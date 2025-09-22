@@ -4,8 +4,8 @@ const DatacoinABI = require("./abi/DataCoin.js");
 
 const { getChainConfig } = require("./chainConfig.js");
 
-const chainName = "sepolia";
-const dataCoinAddress = "0x7d8A2125C2fef7FBFb92D24AE1047BFB26C1b8d8";
+const chainName = "sepolia"; // Available options: "sepolia", "base", "polygon", "worldchain"
+const dataCoinAddress = "0xB244c03710D4BCa56C15C0ccb866Ceb8eaada5f9"; // Valid DataCoin address for the selected chain
 
 const { rpc } = getChainConfig(chainName);
 const provider = new ethers.JsonRpcProvider(rpc);
@@ -107,9 +107,9 @@ const claimVesting = async () => {
 // getCoinInfo();
 
 // ============= Mint Tokens ===============
-// const receiverAddress = "0x0035cd0CA79A5b156d5443b698655DBDc5403B45";
-// const amount = 10;
-// mintTokens(receiverAddress, amount);
+const receiverAddress = "0x0035cd0CA79A5b156d5443b698655DBDc5403B45";
+const amount = 100;
+mintTokens(receiverAddress, amount);
 
 // ============= Claim Vesting =============
-claimVesting();
+// claimVesting();

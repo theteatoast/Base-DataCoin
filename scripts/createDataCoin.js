@@ -52,11 +52,11 @@ const { getChainConfig, getAssetConfig } = require("./chainConfig.js");
 // ============================================================================
 
 // 🌐 BLOCKCHAIN CONFIGURATION
-const chainName = "sepolia"; // Available options: "sepolia", "base"
+const chainName = "sepolia"; // Available options: "sepolia", "base", "polygon", "worldchain"
 
 // 💰 DATACOIN BASIC INFORMATION
-const name = "My Data Coin 5"; // Name of your DataCoin
-const symbol = "MDC5"; // Symbol (ticker) for your DataCoin
+const name = "Awesome Data Coin"; // Name of your DataCoin
+const symbol = "ADC"; // Symbol (ticker) for your DataCoin
 const description = "My personal data coin for tokenization"; // Description of your DataCoin
 const image = "https://example.com/data-coin.png"; // Image URL for your DataCoin
 const email = "abc@gmail.com"; // Your contact email
@@ -105,7 +105,7 @@ function validateUserInputs() {
   }
 
   // Chain validation
-  const validChains = ["sepolia", "base"];
+  const validChains = ["sepolia", "base", "polygon", "worldchain"];
   if (!validChains.includes(chainName)) {
     errors.push(
       `❌ Invalid chain. Supported chains: ${validChains.join(", ")}`
@@ -235,6 +235,7 @@ async function createDataCoin() {
 
     // Step 7: Approve token spending
     console.log("🔓 Approving token spending...");
+    console.log("decimal", lockAssetConfig.decimal);
     const approveTx = await lockTokenContract.approve(
       factoryContract.target,
       ethers.parseUnits(lockAmount.toString(), lockAssetConfig.decimal)
