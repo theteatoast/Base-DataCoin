@@ -1,45 +1,3 @@
-/**
- * ============================================================================
- * 🚀 DATACOIN CREATION SCRIPT
- * ============================================================================
- *
- * This script allows users to create their own DataCoin tokens with liquidity pools.
- * A DataCoin is a tokenized representation of personal or project data.
- *
- * 📋 PREREQUISITES:
- * 1. Set up your .env file with:
- *    - PRIVATE_KEY: Your wallet's private key
- *    - SEPOLIA_RPC_URL: Sepolia testnet RPC URL
- *    - BASE_RPC_URL: Base network RPC URL (if using Base)
- *
- * 2. Ensure you have sufficient balance of the lock asset (USDC, WETH, or LSDC)
- *    in your wallet to meet the minimum lock amount requirement.
- *
- * 📝 HOW TO USE:
- * 1. Edit the "USER CONFIGURATION SECTION" below with your DataCoin details
- * 2. Choose your blockchain network (sepolia or base)
- * 3. Select your lock asset and ensure you have enough balance
- * 4. Run the script: `node createDataCoin.js`
- * 5. Monitor the console for progress and results
- *
- * ⚠️  IMPORTANT NOTES:
- * - Total allocation must equal 100% (10000 basis points)
- * - Lock amount must meet minimum requirements for selected asset
- * - Upload your metadata to IPFS and use the CID as tokenURI
- * - Keep your private key secure and never share it
- *
- * 🏗️  WHAT THIS SCRIPT DOES:
- * 1. Validates all your input parameters
- * 2. Connects to the specified blockchain network
- * 3. Approves the factory contract to spend your lock tokens
- * 4. Creates your DataCoin with the specified parameters
- * 5. Creates a liquidity pool for trading
- * 6. Returns the addresses of your new DataCoin and pool
- *
- *
- * ============================================================================
- */
-
 const { ethers } = require("ethers");
 const bcrypt = require("bcrypt");
 require("dotenv").config();
@@ -52,12 +10,12 @@ const { getChainConfig, getAssetConfig } = require("./chainConfig.js");
 // ============================================================================
 
 // 🌐 BLOCKCHAIN CONFIGURATION
-const chainName = "sepolia"; // Available options: "sepolia", "base", "polygon", "worldchain"
+const chainName = "polygon"; // Available options: "sepolia", "base", "polygon", "worldchain"
 
 // 💰 DATACOIN BASIC INFORMATION
-const name = "Awesome Data Coin"; // Name of your DataCoin
-const symbol = "ADC"; // Symbol (ticker) for your DataCoin
-const description = "My personal data coin for tokenization"; // Description of your DataCoin
+const name = "Test Datacoin"; // Name of your DataCoin
+const symbol = "TDC"; // Symbol (ticker) for your DataCoin
+const description = "Proof Of Purchase Datacoin"; // Description of your DataCoin
 const image = "https://example.com/data-coin.png"; // Image URL for your DataCoin
 const email = "abc@gmail.com"; // Your contact email
 const telegram = "abcd"; // Your Telegram handle
