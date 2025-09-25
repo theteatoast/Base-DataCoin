@@ -10,12 +10,12 @@ const { getChainConfig, getAssetConfig } = require("./chainConfig.js");
 // ============================================================================
 
 // 🌐 BLOCKCHAIN CONFIGURATION
-const chainName = "polygon"; // Available options: "sepolia", "base", "polygon", "worldchain"
+const chainName = "sepolia"; // Available options: "sepolia", "base", "polygon", "worldchain"
 
 // 💰 DATACOIN BASIC INFORMATION
-const name = "Test Datacoin"; // Name of your DataCoin
-const symbol = "TDC"; // Symbol (ticker) for your DataCoin
-const description = "Proof Of Purchase Datacoin"; // Description of your DataCoin
+const name = "Wind Coin"; // Name of your DataCoin
+const symbol = "WDC"; // Symbol (ticker) for your DataCoin
+const description = "Wind Coin Datacoin"; // Description of your DataCoin
 const image = "https://example.com/data-coin.png"; // Image URL for your DataCoin
 const email = "abc@gmail.com"; // Your contact email
 const telegram = "abcd"; // Your Telegram handle
@@ -31,8 +31,8 @@ const liquidityAllocationBps = 3000; // 30% - Liquidity pool allocation in basis
 const creatorVesting = 365 * 24 * 60 * 60; // 1 year vesting period in seconds
 
 // 🔒 LOCK ASSET CONFIGURATION
-const lockAsset = "LSDC"; // Available options: "USDC", "WETH", "LSDC"
-const lockAmount = 10000; // Amount to lock (must be >= minimum for selected asset)
+const lockAsset = "USDC"; // Available options: "USDC", "WETH", "LSDC"
+const lockAmount = 10; // Amount to lock (must be >= minimum for selected asset)
 
 // Constants
 const basisPoints = 10000; // 100%

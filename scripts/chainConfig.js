@@ -24,7 +24,7 @@ const approvedLockAssets = {
     USDC: {
       address: "0x833589fCD6eDb6E08f4c7C32D4f71b54bdA02913",
       decimal: 6,
-      minLockAmount: 5000000,
+      minLockAmount: 500000,
       buyTaxBPS: 100,
       sellTaxBPS: 100,
       mintTaxBPS: 100,
@@ -50,7 +50,7 @@ const approvedLockAssets = {
     USDC: {
       address: "0x3c499c542cEF5E3811e1192ce70d8cC03d5c3359",
       decimal: 6,
-      minLockAmount: 5000000,
+      minLockAmount: 500000,
       buyTaxBPS: 100,
       sellTaxBPS: 100,
       mintTaxBPS: 100,
@@ -76,7 +76,7 @@ const approvedLockAssets = {
     USDC: {
       address: "0x79A02482A880bCE3F13e09Da970dC34db4CD24d1",
       decimal: 6,
-      minLockAmount: 5000000,
+      minLockAmount: 500000,
       buyTaxBPS: 100,
       sellTaxBPS: 100,
       mintTaxBPS: 100,
@@ -102,7 +102,7 @@ const approvedLockAssets = {
     USDC: {
       address: "0x1c7D4B196Cb0C7B01d743Fbc6116a902379C7238",
       decimal: 6,
-      minLockAmount: 5000000,
+      minLockAmount: 500000,
       buyTaxBPS: 100,
       sellTaxBPS: 100,
       mintTaxBPS: 100,
