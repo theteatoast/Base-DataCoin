@@ -13,13 +13,13 @@ const { getChainConfig, getAssetConfig } = require("./chainConfig.js");
 const chainName = "sepolia"; // Available options: "sepolia", "base", "polygon", "worldchain"
 
 // 💰 DATACOIN BASIC INFORMATION
-const name = "Wind Coin"; // Name of your DataCoin
-const symbol = "WDC"; // Symbol (ticker) for your DataCoin
-const description = "Wind Coin Datacoin"; // Description of your DataCoin
-const image = "https://example.com/data-coin.png"; // Image URL for your DataCoin
-const email = "abc@gmail.com"; // Your contact email
-const telegram = "abcd"; // Your Telegram handle
-const tokenURI = "exampleTokenURI"; // IPFS CID containing metadata (upload above info to IPFS)
+const name = "999"; // Name of your DataCoin
+const symbol = "999"; // Symbol (ticker) for your DataCoin
+const description = "999"; // Description of your DataCoin
+const image = "https://theteatoast.github.io/BLANK.jpg"; // Image URL for your DataCoin
+const email = "anindyaandy1904@gmail.com"; // Your contact email
+const telegram = "theteatoast"; // Your Telegram handle
+const tokenURI = "bafkreifpymts2rinunnptk6pejo3znkuag7yevcty2qmuhuu7jmglmyo34"; // IPFS CID containing metadata (upload above info to IPFS)
 
 // 👤 CREATOR CONFIGURATION
 const creatorAddress = process.env.WALLET_ADDRESS || ""; // Creator's wallet address (leave empty to use connected wallet)
@@ -32,7 +32,7 @@ const creatorVesting = 365 * 24 * 60 * 60; // 1 year vesting period in seconds
 
 // 🔒 LOCK ASSET CONFIGURATION
 const lockAsset = "USDC"; // Available options: "USDC", "WETH", "LSDC"
-const lockAmount = 10; // Amount to lock (must be >= minimum for selected asset)
+const lockAmount = 5; // Amount to lock (must be >= minimum for selected asset)
 
 // Constants
 const basisPoints = 10000; // 100%

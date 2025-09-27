@@ -1,4 +1,5 @@
 require("@nomicfoundation/hardhat-toolbox");
+require("dotenv").config();
 
 /** @type import('hardhat/config').HardhatUserConfig */
 module.exports = {
@@ -19,24 +20,23 @@ module.exports = {
       url: "http://127.0.0.1:8545",
       chainId: 1337,
     },
-    // Add more networks as needed
-    // sepolia: {
-    //   url: `https://sepolia.infura.io/v3/${process.env.INFURA_PROJECT_ID}`,
-    //   accounts: process.env.PRIVATE_KEY ? [process.env.PRIVATE_KEY] : [],
-    //   chainId: 11155111,
-    // },
-    // mainnet: {
-    //   url: `https://mainnet.infura.io/v3/${process.env.INFURA_PROJECT_ID}`,
-    //   accounts: process.env.PRIVATE_KEY ? [process.env.PRIVATE_KEY] : [],
-    //   chainId: 1,
-    // },
+    sepolia: {
+      url: process.env.SEPOLIA_RPC_URL || "", // e.g. from Infura/Alchemy/Ankr
+      accounts: process.env.PRIVATE_KEY ? [process.env.PRIVATE_KEY] : [],
+      chainId: 11155111,
+    },
+    mainnet: {
+      url: process.env.MAINNET_RPC_URL || "",
+      accounts: process.env.PRIVATE_KEY ? [process.env.PRIVATE_KEY] : [],
+      chainId: 1,
+    },
   },
   gasReporter: {
     enabled: process.env.REPORT_GAS !== undefined,
     currency: "USD",
   },
   etherscan: {
-    apiKey: process.env.ETHERSCAN_API_KEY,
+    apiKey: process.env.ETHERSCAN_API_KEY || "", // optional, for contract verification
   },
   paths: {
     sources: "./contracts",

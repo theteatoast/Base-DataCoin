@@ -1,115 +1,264 @@
+// datacoin-fixed.js - Fixed BigInt mixing issue
 const { ethers } = require("ethers");
 require("dotenv").config();
-const DatacoinABI = require("./abi/DataCoin.js");
 
-const { getChainConfig } = require("./chainConfig.js");
+// Import ABIs and config
+let DatacoinABI;
+let getChainConfig;
 
-const chainName = "sepolia"; // Available options: "sepolia", "base", "polygon", "worldchain"
-const dataCoinAddress = "0xB244c03710D4BCa56C15C0ccb866Ceb8eaada5f9"; // Valid DataCoin address for the selected chain
+try {
+    DatacoinABI = require("./abi/DataCoin.js");
+    const chainConfigModule = require("./chainConfig.js");
+    getChainConfig = chainConfigModule.getChainConfig;
+} catch (error) {
+    console.error("❌ Error loading required files:");
+    console.error("Make sure these files exist:");
+    console.error("- ./abi/DataCoin.js");
+    console.error("- ./chainConfig.js");
+    process.exit(1);
+}
 
-const { rpc } = getChainConfig(chainName);
-const provider = new ethers.JsonRpcProvider(rpc);
-const wallet = new ethers.Wallet(process.env.PRIVATE_KEY, provider);
-const datacoinContract = new ethers.Contract(
-  dataCoinAddress,
-  DatacoinABI,
-  wallet
-);
+// Configuration
+const chainName = "sepolia";
+const dataCoinAddress = "0x1004C62953b2ca3f3dca57Efb6be21D3657009Aa";
 
-const getCoinInfo = async () => {
-  const name = await datacoinContract.name();
-  const symbol = await datacoinContract.symbol();
-  const creator = await datacoinContract.creator();
-  const allocationConfig = await datacoinContract.allocConfig();
-  const maxSupply = await datacoinContract.MAX_SUPPLY();
-  const contributorsAllocationMinted =
-    await datacoinContract.contributorsAllocMinted();
+async function setupConnection() {
+    try {
+        console.log("🔗 Setting up connection to", chainName);
+        
+        const { rpc } = getChainConfig(chainName);
+        const provider = new ethers.JsonRpcProvider(rpc);
+        const wallet = new ethers.Wallet(process.env.PRIVATE_KEY, provider);
+        
+        console.log("👤 Connected wallet:", wallet.address);
+        
+        const network = await provider.getNetwork();
+        console.log("🌐 Network:", network.name, "Chain ID:", network.chainId.toString());
+        
+        const ethBalance = await provider.getBalance(wallet.address);
+        console.log("⛽ ETH Balance:", ethers.formatEther(ethBalance), "ETH");
+        
+        if (ethBalance < ethers.parseEther("0.001")) {
+            console.warn("⚠️  WARNING: Low ETH balance for gas fees");
+        }
+        
+        const datacoinContract = new ethers.Contract(dataCoinAddress, DatacoinABI, wallet);
+        
+        // Test contract connection
+        const name = await datacoinContract.name();
+        console.log("✅ Successfully connected to DataCoin:", name);
+        
+        return { provider, wallet, datacoinContract };
+        
+    } catch (error) {
+        console.error("❌ Connection setup failed:", error.message);
+        throw error;
+    }
+}
 
-  const creatorAllocation =
-    (maxSupply * BigInt(allocationConfig[0])) / BigInt(10000);
-  const creatorVestingDuration = Number(allocationConfig[1]) / (24 * 60 * 60);
-  const contributorsAllocation =
-    (maxSupply * BigInt(allocationConfig[2])) / BigInt(10000);
-  const liquidityAllocation =
-    (maxSupply * BigInt(allocationConfig[3])) / BigInt(10000);
+const getCoinInfo = async (datacoinContract) => {
+    try {
+        console.log("\n📊 Getting DataCoin information...");
+        console.log("=" .repeat(50));
+        
+        const [name, symbol, creator, allocationConfig, maxSupply, contributorsAllocationMinted] = await Promise.all([
+            datacoinContract.name(),
+            datacoinContract.symbol(),
+            datacoinContract.creator(),
+            datacoinContract.allocConfig(),
+            datacoinContract.MAX_SUPPLY(),
+            datacoinContract.contributorsAllocMinted()
+        ]);
 
-  console.log(`Coin name: ${name}, Coin symbol: ${symbol}`);
-  console.log(`Creator: ${creator}`);
-  console.log(`Max supply: ${ethers.formatUnits(maxSupply, 18)}`);
-  console.log(
-    `Creator allocation: ${ethers.formatUnits(creatorAllocation, 18)}`
-  );
-  console.log(`Creator vesting duration: ${creatorVestingDuration} days`);
-  console.log(
-    `Contributors allocation: ${ethers.formatUnits(contributorsAllocation, 18)}`
-  );
-  console.log(
-    `Contributors allocation minted: ${ethers.formatUnits(
-      contributorsAllocationMinted,
-      18
-    )}`
-  );
-  console.log(
-    `Liquidity allocation: ${ethers.formatUnits(liquidityAllocation, 18)}`
-  );
+        // Fix BigInt mixing by converting everything to BigInt first
+        const maxSupplyBig = BigInt(maxSupply.toString());
+        const creatorBps = BigInt(allocationConfig[0].toString());
+        const contributorsBps = BigInt(allocationConfig[2].toString());
+        const liquidityBps = BigInt(allocationConfig[3].toString());
+        const basisPoints = BigInt(10000);
+
+        // Calculate allocations using BigInt arithmetic
+        const creatorAllocation = (maxSupplyBig * creatorBps) / basisPoints;
+        const contributorsAllocation = (maxSupplyBig * contributorsBps) / basisPoints;
+        const liquidityAllocation = (maxSupplyBig * liquidityBps) / basisPoints;
+        
+        // Convert vesting duration to days
+        const vestingSeconds = Number(allocationConfig[1].toString());
+        const creatorVestingDuration = vestingSeconds / (24 * 60 * 60);
+
+        console.log(`🪙  Token Name: ${name}`);
+        console.log(`🏷️  Token Symbol: ${symbol}`);
+        console.log(`👤 Creator: ${creator}`);
+        console.log(`📈 Max Supply: ${ethers.formatUnits(maxSupply, 18)}`);
+        console.log(`👨‍💼 Creator Allocation: ${ethers.formatUnits(creatorAllocation.toString(), 18)} (${Number(creatorBps) / 100}%)`);
+        console.log(`⏰ Creator Vesting: ${creatorVestingDuration.toFixed(1)} days`);
+        console.log(`👥 Contributors Allocation: ${ethers.formatUnits(contributorsAllocation.toString(), 18)} (${Number(contributorsBps) / 100}%)`);
+        console.log(`✅ Contributors Minted: ${ethers.formatUnits(contributorsAllocationMinted, 18)}`);
+        console.log(`🏊 Liquidity Allocation: ${ethers.formatUnits(liquidityAllocation.toString(), 18)} (${Number(liquidityBps) / 100}%)`);
+        
+        console.log("=" .repeat(50));
+        
+        return {
+            name, symbol, creator, maxSupply,
+            creatorAllocation, contributorsAllocation, liquidityAllocation,
+            vestingDays: creatorVestingDuration
+        };
+        
+    } catch (error) {
+        console.error("❌ Error getting coin info:", error.message);
+        console.error("Stack trace:", error.stack);
+        throw error;
+    }
 };
 
-// function will fail if called other than admin
-const grantMinterRole = async (address) => {
-  console.log("Granting minter role to ", address);
-  const grantRoleTx = await datacoinContract.grantRole(
-    ethers.keccak256(ethers.toUtf8Bytes("MINTER_ROLE")),
-    address
-  );
-  await grantRoleTx.wait();
-  console.log("Tx hash : ", grantRoleTx.hash);
-  console.log("Minter role granted to ", address);
+const grantMinterRole = async (datacoinContract, address) => {
+    try {
+        console.log(`\n🔓 Granting minter role to ${address}...`);
+        
+        const MINTER_ROLE = ethers.keccak256(ethers.toUtf8Bytes("MINTER_ROLE"));
+        
+        // Check if address already has minter role
+        const hasRole = await datacoinContract.hasRole(MINTER_ROLE, address);
+        if (hasRole) {
+            console.log("ℹ️  Address already has minter role");
+            return;
+        }
+        
+        const grantRoleTx = await datacoinContract.grantRole(MINTER_ROLE, address);
+        console.log("📤 Transaction submitted:", grantRoleTx.hash);
+        
+        const receipt = await grantRoleTx.wait();
+        console.log("✅ Minter role granted successfully!");
+        console.log("⛽ Gas used:", receipt.gasUsed.toString());
+        
+    } catch (error) {
+        console.error("❌ Error granting minter role:", error.message);
+        
+        if (error.message.includes("AccessControl")) {
+            console.error("💡 Only the contract admin can grant minter roles");
+        }
+        throw error;
+    }
 };
 
-// function will fail if called other than admin
-const revokeMinterRole = async (address) => {
-  console.log("Revoking minter role from ", address);
-  const revokeRoleTx = await datacoinContract.revokeRole(
-    ethers.keccak256(ethers.toUtf8Bytes("MINTER_ROLE")),
-    address
-  );
-  await revokeRoleTx.wait();
-  console.log("Tx hash : ", revokeRoleTx.hash);
-  console.log("Minter role revoked from ", address);
+const mintTokens = async (datacoinContract, address, amount) => {
+    try {
+        console.log(`\n🏭 Minting ${amount} tokens to ${address}...`);
+        
+        // Check if caller has minter role
+        const MINTER_ROLE = ethers.keccak256(ethers.toUtf8Bytes("MINTER_ROLE"));
+        const wallet = datacoinContract.runner;
+        const hasMinterRole = await datacoinContract.hasRole(MINTER_ROLE, wallet.address);
+        
+        if (!hasMinterRole) {
+            throw new Error("Caller does not have minter role");
+        }
+        
+        const mintTx = await datacoinContract.mint(
+            address,
+            ethers.parseUnits(amount.toString(), 18)
+        );
+        console.log("📤 Transaction submitted:", mintTx.hash);
+        
+        const receipt = await mintTx.wait();
+        console.log("✅ Tokens minted successfully!");
+        console.log("⛽ Gas used:", receipt.gasUsed.toString());
+        
+        // Check new balance
+        const balance = await datacoinContract.balanceOf(address);
+        console.log(`💰 New balance: ${ethers.formatUnits(balance, 18)} tokens`);
+        
+    } catch (error) {
+        console.error("❌ Error minting tokens:", error.message);
+        
+        if (error.message.includes("minter role")) {
+            console.error("💡 Only addresses with minter role can mint tokens");
+        }
+        throw error;
+    }
 };
 
-const mintTokens = async (address, amount) => {
-  console.log(` Minting ${amount} tokens to ${address}`);
-  const mintTx = await datacoinContract.mint(
-    address,
-    ethers.parseUnits(amount.toString(), 18)
-  );
-  await mintTx.wait();
-  console.log("Tx hash : ", mintTx.hash);
-  console.log("Tokens minted to ", address);
+const claimVesting = async (datacoinContract) => {
+    try {
+        console.log("\n⏰ Claiming vested tokens...");
+        
+        const claimableAmount = await datacoinContract.getClaimableAmount();
+        console.log(`📊 Claimable amount: ${ethers.formatUnits(claimableAmount, 18)} tokens`);
+        
+        // Convert to BigInt for comparison
+        const claimableBig = BigInt(claimableAmount.toString());
+        if (claimableBig === 0n) {
+            console.log("ℹ️  No tokens available to claim at this time");
+            return;
+        }
+        
+        const claimVestingTx = await datacoinContract.claimVesting();
+        console.log("📤 Transaction submitted:", claimVestingTx.hash);
+        
+        const receipt = await claimVestingTx.wait();
+        console.log("✅ Vesting claimed successfully!");
+        console.log("⛽ Gas used:", receipt.gasUsed.toString());
+        
+    } catch (error) {
+        console.error("❌ Error claiming vesting:", error.message);
+        throw error;
+    }
 };
 
-const claimVesting = async () => {
-  const claimableAmount = await datacoinContract.getClaimableAmount();
-  console.log("Claimable amount: ", claimableAmount);
-  console.log("Claiming vesting...");
-  const claimVestingTx = await datacoinContract.claimVesting();
-  await claimVestingTx.wait();
-  console.log("Tx hash : ", claimVestingTx.hash);
-  console.log("Vesting claimed");
-};
+async function main() {
+    try {
+        console.log("🚀 DataCoin Management Script");
+        console.log("============================");
+        
+        // Setup connection
+        const { datacoinContract } = await setupConnection();
+        
+        // Configuration - Edit these values
+        const operations = {
+            getCoinInfo: true,           // Show coin information
+            grantMinterRole: true,       // Grant minter role
+            mintTokens: true,            // Mint tokens
+            claimVesting: false,         // Claim vested tokens
+        };
+        
+        const config = {
+            mintRoleAddress: "0x68827A9Fa11B716091f4B599D54a2484fb599a4C",
+            receiverAddress: "0x68827A9Fa11B716091f4B599D54a2484fb599a4C",
+            mintAmount: 100,
+        };
+        
+        // Execute operations
+        if (operations.getCoinInfo) {
+            await getCoinInfo(datacoinContract);
+        }
+        
+        if (operations.grantMinterRole) {
+            await grantMinterRole(datacoinContract, config.mintRoleAddress);
+        }
+        
+        if (operations.mintTokens) {
+            await mintTokens(datacoinContract, config.receiverAddress, config.mintAmount);
+        }
+        
+        if (operations.claimVesting) {
+            await claimVesting(datacoinContract);
+        }
+        
+        console.log("\n✅ All operations completed successfully!");
+        
+    } catch (error) {
+        console.error("\n❌ Script execution failed:", error.message);
+        process.exit(1);
+    }
+}
 
-// ============= Grant Minter Role =============
-// const mintRoleAddress = "0x0035cd0CA79A5b156d5443b698655DBDc5403B45";
-// grantMinterRole(mintRoleAddress);
-
-// ============= Get Coin Info =============
-// getCoinInfo();
-
-// ============= Mint Tokens ===============
-const receiverAddress = "0x0035cd0CA79A5b156d5443b698655DBDc5403B45";
-const amount = 100;
-mintTokens(receiverAddress, amount);
-
-// ============= Claim Vesting =============
-// claimVesting();
+// Execute the script
+main()
+    .then(() => {
+        console.log("\n🎯 Script finished!");
+        process.exit(0);
+    })
+    .catch((error) => {
+        console.error("\n💥 Unhandled error:", error.message);
+        process.exit(1);
+    });
